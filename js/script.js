@@ -47,12 +47,11 @@ guessButton.addEventListener("click", function (e) {
       const acceptedLetter = /[a-zA-Z]/
       if (input.length === 0){
         message.innerText = "Please enter a letter A-Z!";
-      } else if (input.lenght > 1) {
+      } else if (input.length > 1) {
         message.innerText = "Please only enter a single letter!";
       } else if (!input.match(acceptedLetter)) {
         message.innerText = "Please only enter a letter, no numbers or special characters!";
       } else {
-        message.innerText = "Good job guessing only a single letter!";
         return input;
       }
   };
@@ -63,6 +62,41 @@ guessButton.addEventListener("click", function (e) {
         message.innerText = "You already guessed that letter!";
     } else {
         guessedLetters.push(guess);
+        showGuessed();
+        wordProgressUpdate(guessedLetters);
     }
     console.log(guessedLetters);
   };
+
+  const showGuessed = function () {
+    guessedLettersHTML.innerHTML = "";
+    for (const letter of guessedLetters) {
+        const li = document.createElement("li");
+        li.innerText = letter;
+        guessedLettersHTML.append(li);
+    }
+  };
+
+  const wordProgressUpdate = function(guessedLetters) {
+    const wordUpper = word.toUpperCase();
+    const wordArray = wordUpper.split("");
+    const revealWord = [];
+    for (const letter of wordArray) {
+        if(guessedLetters.includes(letter)) {
+            revealWord.push(letter.toUpperCase());
+        } else {
+            revealWord.push("●");
+        };
+    }
+    wordProgress.innerText = revealWord.join("");
+    win();
+  };
+
+  const win = function () {
+    if (word.toUpperCase() === wordProgress.innerText){
+        message.classList.add("win");
+        message.innerHTML = `<p class="highlight">You guessed correct the word! Congrats!</p>`;
+    }
+  };
+
+  
