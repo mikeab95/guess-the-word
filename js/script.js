@@ -1,23 +1,34 @@
-//guessed letters
 const guessedLettersHTML = document.querySelector(".guessed-letters");
-//guess button
+
 const guessButton = document.querySelector(".guess");
-//input form
+
 const inputGuess = document.querySelector(".letter");
-//guessed word progress paragraph
+
 const wordProgress = document.querySelector(".word-in-progress");
-//guesses remaing paragraph
+
 const remaining = document.querySelector(".remaining");
-//remaing guesses span
+
 const span = document.querySelector("span");
-//messages paragraph
+
 const message = document.querySelector(".message");
-//hidden play again button
+
 const playAgain = document.querySelector(".play-again");
-//test word
-const word = "magnolia";
-//guessed letters
+
+let word = "magnolia";
+
 const guessedLetters = [];
+
+let remainingGuesses = 8;
+
+const getWord = async function () {
+    const res = await fetch(`https://gist.githubusercontent.com/skillcrush-curriculum/7061f1d4d3d5bfe47efbfbcfe42bf57e/raw/5ffc447694486e7dea686f34a6c085ae371b43fe/words.txt`);
+    const words = await res.text();
+    const wordArray = words.split("\n");
+    const randomIndex = Math.floor(Math.random() * wordArray.length);
+    word = wordArray[randomIndex].trim();
+    
+    placeholder(word);
+};
 
 const placeholder = function (word) {
     const placeholderLetters = [];
@@ -28,7 +39,7 @@ const placeholder = function (word) {
     wordProgress.innerText = placeholderLetters.join("");
 };
 
-placeholder(word);
+getWord();
 
 guessButton.addEventListener("click", function (e) {
     e.preventDefault();
@@ -63,6 +74,7 @@ guessButton.addEventListener("click", function (e) {
     } else {
         guessedLetters.push(guess);
         showGuessed();
+        guessCount(guess);
         wordProgressUpdate(guessedLetters);
     }
     console.log(guessedLetters);
@@ -90,6 +102,24 @@ guessButton.addEventListener("click", function (e) {
     }
     wordProgress.innerText = revealWord.join("");
     win();
+  };
+
+  const guessCount = function(guess) {
+    const wordUpper = word.toUpperCase();
+    if(!wordUpper.includes(guess)){
+        message.innerText = "Sorry, guess again!";
+        remainingGuesses -= 1;
+    } else {
+        message.innerText = "Great guess!";
+    }
+    if (remainingGuesses === 0){
+        message.innerText = `Game over! You're out of guesses. The word was ${word}`;
+        span.innerText = `0 guesses`;
+    } else if (remainingGuesses === 1) {
+        span.innerText = `1 more guess`;
+    } else {
+        span.innerText = `${remainingGuesses} guesses`
+    }
   };
 
   const win = function () {
